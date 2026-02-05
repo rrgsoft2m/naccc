@@ -35,7 +35,8 @@ export default function AdminLoginPage() {
             })
 
             if (res.ok) {
-                router.push('/admin')
+                // Force full reload to ensure cookies are sent
+                window.location.href = '/admin'
             } else {
                 const body = await res.json()
                 setError(body.error || 'Kirishda xatolik yuz berdi')
