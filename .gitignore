@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# temporary/build files
+build_temp/
+clean_project/
+dev.db
+debug-*.js
+generate-excel.js
+seed-certificate.js

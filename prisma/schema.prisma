@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      String   @default("ADMIN") // ADMIN, OPERATOR
+  createdAt DateTime @default(now())
+}
+
+model Region {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  districts District[]
+}
+
+model District {
+  id           String        @id @default(cuid())
+  name         String
+  regionId     String
+  region       Region        @relation(fields: [regionId], references: [id])
+  participants Participant[]
+}
+
+model Participant {
+  id          String        @id @default(cuid())
+  firstName   String
+  lastName    String
+  phone       String
+  school      String
+  grade       Int
+  subject     String        // MATH, ENGLISH, COMBO
+  regionId    String?
+  districtId  String
+  district    District      @relation(fields: [districtId], references: [id])
+  
+  status      String        @default("PENDING") // PENDING, PAID, CANCELLED
+  paymentId   String?
+  amount      Float         @default(0)
+  
+  registeredAt DateTime      @default(now())
+  paidAt       DateTime?
+
+  result       Result?
+}
+
+model TestPaper {
+  id        String   @id @default(cuid())
+  subject   String
+  grade     Int
+  title     String
+  fileUrl   String
+  createdAt DateTime @default(now())
+}
+
+model Result {
+  id             String      @id @default(cuid())
+  participantId  String      @unique
+  participant    Participant @relation(fields: [participantId], references: [id])
+  
+  score          Float
+  maxScore       Float       @default(100)
+  correctAnswers Int
+  totalQuestions Int         @default(20)
+  
+  rank           Int?        // Calculated rank
+  isQualified    Boolean     @default(false) // 70% threshold
+  
+  createdAt      DateTime    @default(now())
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String?
+  imageUrl  String
+  type      String   @default("IMAGE") // IMAGE, VIDEO
+  createdAt DateTime @default(now())
+}
+
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g., "home_hero_title", "contact_phone"
+  content   String
+  type      String   @default("text") // text, html, image_url
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  message   String
+  createdAt DateTime @default(now())
+}
