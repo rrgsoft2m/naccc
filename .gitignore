@@ -49,3 +49,4 @@ dev.db
 debug-*.js
 generate-excel.js
 seed-certificate.js
+.env*.local
