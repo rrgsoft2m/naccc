@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { saveFile } from '@/lib/file-utils'
+import { put } from '@vercel/blob'
 
 export async function GET() {
     try {
@@ -25,14 +25,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
         }
 
-        const fileUrl = await saveFile(file, 'papers')
+        const blob = await put(file.name, file, { access: 'public' })
 
         const paper = await prisma.testPaper.create({
             data: {
                 title,
                 subject,
                 grade,
-                fileUrl
+                fileUrl: blob.url
             }
         })
 

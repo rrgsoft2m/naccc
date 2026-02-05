@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { saveFile } from '@/lib/file-utils'
+import { put } from '@vercel/blob'
 
 export async function GET() {
     try {
@@ -23,11 +23,11 @@ export async function POST(request: Request) {
         }
 
         const type = file.type.startsWith('video/') ? 'VIDEO' : 'IMAGE'
-        const fileUrl = await saveFile(file, 'gallery')
+        const blob = await put(file.name, file, { access: 'public' })
 
         const item = await prisma.galleryItem.create({
             data: {
-                imageUrl: fileUrl,
+                imageUrl: blob.url,
                 type
             }
         })
